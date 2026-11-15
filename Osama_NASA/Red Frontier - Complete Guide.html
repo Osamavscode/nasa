@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Red Frontier — Complete Guide</title>
+<style>
+:root{--bg:#070d1e;--card:#0e1a36;--line:#22345e;--neon:#3fd0ff;--mars:#ff7a3c;--ok:#3dffa2;--warn:#ffc24a;--txt:#dbe7ff;--muted:#8fa3cc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 "Segoe UI",system-ui,sans-serif}
+.wrap{display:grid;grid-template-columns:270px 1fr;max-width:1300px;margin:0 auto}
+nav{position:sticky;top:0;height:100vh;overflow:auto;padding:28px 18px;border-right:1px solid var(--line);font-size:14px}
+nav a{display:block;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:6px}nav a:hover{background:var(--card);color:#fff}
+nav b{display:block;color:var(--mars);margin:14px 0 4px;font-size:12px;letter-spacing:.1em}
+main{padding:36px 48px 120px;max-width:980px}
+h1{font-size:38px;margin:0 0 4px;color:#fff;letter-spacing:.03em}h1 span{color:var(--mars)}
+h2{font-size:26px;color:var(--neon);border-bottom:1px solid var(--line);padding-bottom:8px;margin-top:56px}
+h3{font-size:19px;color:#fff;margin-top:30px}
+code{font-family:Consolas,"Cascadia Mono",monospace;background:#16244a;padding:1px 6px;border-radius:4px;font-size:14px;color:#ffd7b8}
+pre{background:#040915;border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:auto;font-size:13.5px;line-height:1.5}
+pre code{background:none;padding:0;color:#cfe3ff}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card);color:var(--neon)}
+.box{border-left:4px solid var(--neon);background:var(--card);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0}
+.box.warn{border-color:var(--warn)}.box.ok{border-color:var(--ok)}.box.mars{border-color:var(--mars)}
+.muted{color:var(--muted)}ol li,ul li{margin:4px 0}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0}.flow span{background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:20px;font-size:14px}.flow i{color:var(--mars);font-style:normal}
+@media print{nav{display:none}.wrap{display:block}body{background:#fff;color:#000}pre{background:#f4f4f4}code{color:#900;background:#f4f4f4}h2,h3,th{color:#003366}}
+</style></head><body><div class="wrap">
+<nav>
+<b>START</b><a href="#folder">What's in the folder</a><a href="#play">How to play</a>
+<b>HOW IT WORKS</b><a href="#big">The big picture</a><a href="#files">Every source file</a><a href="#physics">The physics model</a><a href="#flowsim">What happens each frame</a>
+<b>EDITING</b><a href="#setup">Set up your PC to edit</a><a href="#name">Change the game's name</a><a href="#text">Texts, team &amp; credits</a><a href="#look">Colours, fonts &amp; style</a><a href="#parts">Rover components</a><a href="#mission">Mission, targets &amp; difficulty</a><a href="#science">Science tasks</a><a href="#constants">Physics constants</a><a href="#terrain">Terrain &amp; map</a><a href="#visual">3D visuals &amp; rover model</a><a href="#controls">Controls &amp; HUD</a><a href="#scoring">Scoring &amp; results</a><a href="#sound">Sound</a><a href="#menus">Menus, settings &amp; screens</a>
+<b>SHIPPING</b><a href="#build">Build browser version</a><a href="#exe">Build the Windows .exe</a><a href="#trouble">Troubleshooting</a><a href="#cheat">Cheat sheet</a>
+</nav>
+<main>
+<h1>RED <span>FRONTIER</span> — Complete Guide</h1>
+<div class="muted">How the game works, and how to change any part of it. Written for the NASA Space Apps team.</div>
+
+<div class="box mars"><b>The one rule to remember:</b> you never edit the game you play directly. You edit the <b>source code</b> (the <code>src</code> folder inside <code>RedFrontier-Source.zip</code>), then run <b>one build command</b>, which produces a new playable game. The playable files are compressed and unreadable, so editing them directly does not work.</div>
+
+<!-- ============================================================ -->
+<h2 id="folder">1. What's in the folder</h2>
+<table>
+<tr><th>File</th><th>What it is</th></tr>
+<tr><td><code>Play Red Frontier.bat</code></td><td>Double-click to play. The first time, it unpacks the browser version and opens it in its own window using Microsoft Edge.</td></tr>
+<tr><td><code>RedFrontier-Browser.zip</code></td><td>The playable game (HTML + JavaScript). It works offline in Chrome or Edge.</td></tr>
+<tr><td><code>RedFrontier-Source.zip</code></td><td><b>The code you edit.</b> Everything in this guide refers to files inside it.</td></tr>
+<tr><td><code>README.md</code></td><td>A short summary. It opens in any text editor.</td></tr>
+<tr><td><code>screenshots/</code></td><td>Images for your presentation.</td></tr>
+<tr><td><code>Red Frontier - Complete Guide.html</code></td><td>This guide.</td></tr>
+</table>
+
+<h2 id="play">2. How to play</h2>
+<ol>
+<li><b>Main menu</b> → <b>Play</b> → choose <b>Mars Exploration</b> → read the briefing.</li>
+<li><b>Design</b> the rover with the 9 category tabs on the left. The right panel shows live mass, power, mobility and science. Red messages are errors you must fix before continuing (over budget, or over the payload limit).</li>
+<li><b>Plan</b> the route: click the map to add waypoints, or press <b>Auto-plan</b>. Red sections are too steep or too soft for your wheels.</li>
+<li><b>Drive</b>: use <code>WASD</code>, or press <code>R</code> for AutoNav. At each blue beacon, press <code>E</code> and run the science tasks.</li>
+<li>Survive up to 3 sols. Nights are skipped automatically, but your battery must last through them.</li>
+<li>Read the <b>Results</b> report, improve the design and fly again.</li>
+</ol>
+<table><tr><th>Key</th><th>Action</th><th>Key</th><th>Action</th></tr>
+<tr><td><code>W A S D</code> / arrows</td><td>drive / steer</td><td><code>Tab</code></td><td>data dashboard</td></tr>
+<tr><td><code>Space</code></td><td>brake</td><td><code>M</code></td><td>big map</td></tr>
+<tr><td><code>R</code></td><td>AutoNav on/off</td><td><code>C</code></td><td>Navcam camera</td></tr>
+<tr><td><code>E</code>, then <code>1 2 3</code></td><td>science panel / run task</td><td><code>T</code></td><td>time warp ×1/×2/×4</td></tr>
+<tr><td>mouse drag / wheel</td><td>orbit / zoom camera</td><td><code>Esc</code></td><td>pause menu</td></tr></table>
+
+<!-- ============================================================ -->
+<h2 id="big">3. The big picture — how it works</h2>
+<p>The game is a <b>web application</b> written in JavaScript. It uses <b>Three.js</b> for 3D graphics and runs inside a browser window. The Windows <code>.exe</code> version is the same game wrapped in <b>Electron</b>, a small built-in Chrome.</p>
+<div class="flow"><span>Main menu</span><i>→</i><span>Mission select</span><i>→</i><span>Briefing</span><i>→</i><span>Rover design</span><i>→</i><span>Route planning</span><i>→</i><span>3D mission</span><i>→</i><span>Results</span></div>
+<p>All three core ideas from your vision document are connected through <b>one shared physics file</b>:</p>
+<ul>
+<li><b>Engineering design</b> (the Design screen) stores the player's choices in <code>app.state.design</code>, for example <code>{ chassis: 'medium', wheels: 'std', solar: 's4', … }</code>.</li>
+<li><b>Physics simulation</b> (<code>physics.js</code>) turns those choices into numbers: mass, power, maximum slope, energy use.</li>
+<li><b>3D gameplay</b> (<code>sim.js</code>) calls the same physics functions every frame. That's why choosing narrow wheels really does make you get stuck in the dunes.</li>
+</ul>
+<p>The route planner (<code>planner.js</code>) runs the same physics along the planned path to predict battery, time and danger, before you drive.</p>
+
+<h3 id="files">Every source file</h3>
+<table>
+<tr><th>File</th><th>What it does</th><th>Edit it to…</th></tr>
+<tr><td><code>src/data.js</code></td><td><b>All game content</b>: name, Mars constants, every rover part, the mission, science targets, data sources</td><td>change names, parts, prices, targets, difficulty. <b>This is the file you'll edit most.</b></td></tr>
+<tr><td><code>src/physics.js</code></td><td>Engineering equations: solar power, temperature, pressure, driving power, traction, heaters, rover stats</td><td>change how the simulation behaves</td></tr>
+<tr><td><code>src/planner.js</code></td><td>Estimates a route: energy, time, battery, wheel wear, steep sections. Also contains Auto-plan.</td><td>change planning logic</td></tr>
+<tr><td><code>src/terrain.js</code></td><td>Builds the landscape from maths: height, slope, terrain type, rock positions</td><td>reshape the map: hills, dunes, crater</td></tr>
+<tr><td><code>src/mapRender.js</code></td><td>Draws the 2D orbital map used for planning and the minimap</td><td>map colours</td></tr>
+<tr><td><code>src/world.js</code></td><td>The 3D Mars scene: sky, sun, lighting, fog, ground, rocks, beacons, dust</td><td>change how Mars looks</td></tr>
+<tr><td><code>src/rover.js</code></td><td>Loads the 3D rover model and adds parts based on the design (solar wings, batteries, antennas, wheel size)</td><td>change the rover's look</td></tr>
+<tr><td><code>src/science.js</code></td><td>The result text and numbers for each science measurement</td><td>change scientific results</td></tr>
+<tr><td><code>src/audio.js</code></td><td>All sounds, generated by code (there are no audio files)</td><td>change sounds and music</td></tr>
+<tr><td><code>src/main.js</code></td><td>Starts the game: loading screen, renderer, screen switching, saved settings</td><td>loading screen, default settings</td></tr>
+<tr><td><code>src/styles.css</code></td><td>The whole visual style: colours, fonts, panels, buttons</td><td>change colours and fonts</td></tr>
+<tr><td><code>src/screens/menu.js</code></td><td>Main menu, Settings, Credits</td><td>menu buttons, credits, team names</td></tr>
+<tr><td><code>src/screens/missions.js</code></td><td>Mission selection cards and the Briefing page</td><td>briefing text</td></tr>
+<tr><td><code>src/screens/design.js</code></td><td>Rover design screen and hangar 3D scene</td><td>design screen layout</td></tr>
+<tr><td><code>src/screens/planning.js</code></td><td>Route planning screen</td><td>planning screen</td></tr>
+<tr><td><code>src/screens/sim.js</code></td><td><b>The gameplay</b>: driving, HUD, energy, science, nights, relay passes, pause, dashboard</td><td>controls, HUD, game rules</td></tr>
+<tr><td><code>src/screens/results.js</code></td><td>Score, grade, success/failure and the engineering report</td><td>scoring rules</td></tr>
+<tr><td><code>src/screens/common.js</code></td><td>Shared pieces: top bar, space background, Mars planet, charts</td><td>menu background, charts</td></tr>
+<tr><td><code>assets/rover.glb</code></td><td>The 3D rover model (optimised from your zip)</td><td>replace the rover</td></tr>
+<tr><td><code>build.mjs</code></td><td>Builds the playable game into the <code>dist</code> folder</td><td>browser tab title</td></tr>
+<tr><td><code>desktop/</code></td><td>Electron wrapper for the .exe (window, icon, Exit button)</td><td>window title, icon</td></tr>
+<tr><td><code>tools/pack.mjs</code></td><td>Makes the Windows .exe</td><td>exe name, company</td></tr>
+<tr><td><code>tools/optimize.mjs</code></td><td>Shrinks a .glb model for the game</td><td>(use it to swap models)</td></tr>
+</table>
+
+<h3 id="physics">The physics model (what the game calculates)</h3>
+<table>
+<tr><th>Thing</th><th>Equation / rule</th><th>Where</th></tr>
+<tr><td>Rolling + climbing force</td><td><code>F = m·g·(Crr·cosθ + sinθ)</code>, with g = 3.721 m/s²</td><td><code>drivePower()</code></td></tr>
+<tr><td>Driving power</td><td><code>P = F·v/η + motor overhead + navigation computer + cameras</code>, with η = 0.5</td><td><code>drivePower()</code></td></tr>
+<tr><td>Max climbable slope</td><td><code>tanθ ≤ μ·grip − Crr</code>, capped at a 30° tilt limit</td><td><code>maxSlopeDeg()</code>, <code>tractionState()</code></td></tr>
+<tr><td>Sand sinkage</td><td>Crr in sand × wheel factor × (mass/500)<sup>0.25</sup> / √(width·radius)</td><td><code>effectiveCrr()</code></td></tr>
+<tr><td>Sunlight on ground</td><td><code>S·μ·(e<sup>−τ/μ</sup> + 0.35·(1−e<sup>−τ/μ</sup>))</code>. S = 586 W/m², μ = cos(sun zenith), τ = dust</td><td><code>irradiance()</code></td></tr>
+<tr><td>Solar power</td><td><code>area × sunlight × 0.20</code> (PANEL_EFF)</td><td><code>solarPower()</code></td></tr>
+<tr><td>Dust storm</td><td>τ goes 0.6 → 1.6 from sol 1 13:00 to 15:00, then slowly clears to 0.8 by sol 3 15:00</td><td><code>dustTau()</code></td></tr>
+<tr><td>Air temperature</td><td>Daily curve from −70 °C (dawn) to +6 °C (14:00)</td><td><code>airTemp()</code></td></tr>
+<tr><td>Heaters</td><td><code>(−30 − T<sub>air</sub>) × 0.6 W/K × chassis scale × 2</code>. Zero if an RTG is fitted.</td><td><code>heaterPower()</code></td></tr>
+<tr><td>Battery</td><td><code>E += (generation − load) × Δt</code></td><td><code>energyStep()</code> in sim.js</td></tr>
+<tr><td>Wheel damage</td><td>terrain damage × 0.15 / wheel durability (× 0.45 with hazcams) per metre, plus collisions</td><td><code>wheelDamagePerM()</code></td></tr>
+<tr><td>Time</td><td>1 real second = 100 Mars seconds. 1 Mars hour = 3699 Earth seconds.</td><td><code>MISSION.timeScale</code></td></tr>
+</table>
+
+<h3 id="flowsim">What happens every frame during the mission (sim.js → <code>step()</code>)</h3>
+<ol>
+<li>Read the keys (or AutoNav steering toward the next waypoint).</li>
+<li>Look at the ground under the rover: terrain type and slope in the driving direction.</li>
+<li>Traction check: if the slope is too steep or the sand too soft, the speed drops toward 0 and a "wheels slipping" warning appears.</li>
+<li>Move the rover, check for boulder collisions and add wheel wear.</li>
+<li>Energy: generation (solar + RTG) minus loads (idle + heaters + driving + science + radio) goes into the battery.</li>
+<li>Check orbiter relay passes (11:30 and 16:00) and send stored data to Earth.</li>
+<li>Check for end conditions: battery 0 → fail; wheels 0 → fail; 17:30 → night (or the end of the mission on sol 3).</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="setup">4. Set up your PC to edit the game (one time)</h2>
+<ol>
+<li>Install <b>Node.js LTS</b> from <code>nodejs.org</code>, using all the default options.</li>
+<li>Install a code editor. <b>Visual Studio Code</b> (free) is recommended.</li>
+<li>Right-click <code>RedFrontier-Source.zip</code> → <b>Extract All</b>. You get a folder <code>RedFrontier-Source</code>.</li>
+<li>Open that folder in VS Code (<i>File → Open Folder</i>), then open a terminal (<i>Terminal → New Terminal</i>) and run:
+<pre><code>npm install --omit=dev</code></pre>
+This downloads the building tools (about 60 MB, one time only). <span class="muted">Leave out <code>--omit=dev</code> only if you want to build the .exe (it adds about 120 MB).</span></li>
+</ol>
+<h3>The edit → test loop</h3>
+<ol>
+<li>Edit a file in <code>src/</code> and save it.</li>
+<li>In the terminal, run:<pre><code>node build.mjs</code></pre></li>
+<li>Open <code>dist/index.html</code> in Chrome or Edge (double-click it). If it's already open, press <code>F5</code>.</li>
+</ol>
+<div class="box ok"><b>Tip:</b> if something breaks, press <code>F12</code> in the browser and read the red error in the <b>Console</b> tab. It tells you the file and line. Usually it's a missing comma or quote.</div>
+<div class="box warn"><b>Before big changes,</b> make a copy of the whole <code>RedFrontier-Source</code> folder so you can go back.</div>
+
+<!-- ============================================================ -->
+<h2 id="name">5. Change the game's name</h2>
+<p>The name appears in a few places. Change all of them. You can use VS Code's <b>Search across files</b> (<code>Ctrl+Shift+F</code>) for <code>Red Frontier</code> and <code>RED FRONTIER</code>.</p>
+<table>
+<tr><th>#</th><th>File</th><th>What to change</th><th>Shows up in</th></tr>
+<tr><td>1</td><td><code>src/data.js</code></td><td><code>GAME.title</code>, <code>subtitle</code>, <code>tagline</code>, <code>version</code></td><td>Main menu logo, Credits</td></tr>
+<tr><td>2</td><td><code>src/main.js</code> (≈ line 97)</td><td>the text <code>RED FRONTIER</code> in the loading screen</td><td>Loading screen</td></tr>
+<tr><td>3</td><td><code>build.mjs</code></td><td>the <code>&lt;title&gt;</code> text</td><td>Browser tab / window title (browser version)</td></tr>
+<tr><td>4</td><td><code>desktop/main.cjs</code></td><td><code>title: '…'</code></td><td>.exe window title</td></tr>
+<tr><td>5</td><td><code>desktop/app-package.json</code></td><td><code>productName</code>, <code>description</code></td><td>.exe app info</td></tr>
+<tr><td>6</td><td><code>tools/pack.mjs</code></td><td><code>name</code>, <code>executableName</code>, <code>FileDescription</code>, <code>ProductName</code>, <code>CompanyName</code></td><td>.exe file name and properties</td></tr>
+<tr><td>7</td><td><code>README.md</code> and <code>Play Red Frontier.bat</code></td><td>text and file name</td><td>docs and launcher</td></tr>
+</table>
+<p>Example in <code>src/data.js</code>:</p>
+<pre><code>export const GAME = {
+  title: 'ARES PATHFINDER',              // big logo text on the main menu
+  subtitle: 'Mars Mission Designer',     // orange line under the title
+  tagline: 'Design it. Simulate it. Explore it. Learn from it.',
+  version: 'Demo v1.0 — NASA Space Apps Challenge',
+};</code></pre>
+<div class="box">To make the loading screen use the same name automatically, replace <code>RED FRONTIER</code> in <code>main.js</code> with <code>${GAME.title}</code>, and add <code>GAME</code> to the import at the top: <code>import { DEFAULT_DESIGN, GAME } from './data.js';</code></div>
+<p><b>Mission name</b> ("Operation Aeolis") and site: <code>MISSION.name</code> and <code>MISSION.site</code> in <code>data.js</code>.</p>
+
+<!-- ============================================================ -->
+<h2 id="text">6. Texts, team names &amp; credits</h2>
+<ul>
+<li><b>Team names</b>: <code>src/screens/menu.js</code> → find <code>Team members: add your names here</code> and replace that line, e.g. <code>Team: Eyad, Sara, Omar — Cairo</code>.</li>
+<li><b>Data sources list</b> (Credits screen): <code>SOURCES</code> in <code>data.js</code>. Each entry is <code>['what', 'source']</code>.</li>
+<li><b>Briefing text</b> (story, challenges list, environment table): <code>src/screens/missions.js</code>, in the <code>briefing</code> section.</li>
+<li><b>Mission cards</b> (Earth / Moon / Mars, difficulty, skills, locked or not): <code>MISSIONS_MENU</code> in <code>data.js</code>.</li>
+<li><b>Bottom-corner menu texts</b>: <code>menu.js</code>, the <code>ver</code> and <code>ver2</code> divs.</li>
+<li><b>In-game messages</b> (toasts like "Dust storm arriving"): search for <code>toast(</code> in <code>sim.js</code>.</li>
+<li><b>Failure messages</b>: <code>reasonTxt</code> inside the <code>end()</code> function in <code>sim.js</code>.</li>
+</ul>
+<div class="box warn">Text inside the code is between quotes <code>'…'</code> or backticks <code>`…`</code>. If your text contains an apostrophe (for example <code>don't</code>), use backticks or write <code>don\'t</code>.</div>
+
+<!-- ============================================================ -->
+<h2 id="look">7. Colours, fonts &amp; style</h2>
+<p>All colours are at the top of <code>src/styles.css</code>:</p>
+<pre><code>:root {
+  --bg: #040814;      /* page background           */
+  --neon: #3fd0ff;    /* main neon blue highlights  */
+  --neon2: #1f8fff;   /* darker blue                */
+  --mars: #ff6a2b;    /* Mars orange accents/buttons*/
+  --mars2: #ffb067;   /* light orange text          */
+  --ok: #3dffa2;      /* green (success)            */
+  --warn: #ffc24a;    /* yellow (warnings)          */
+  --err: #ff4d5e;     /* red (errors)               */
+  --txt: #dbe7ff;     /* normal text                */
+  --muted: #8296c2;   /* grey text                  */
+  --glass: rgba(12, 26, 58, 0.62);  /* panel background (last number = transparency) */
+}</code></pre>
+<ul>
+<li><b>Fonts</b>: <code>--h</code> (headings: Orbitron), <code>--b</code> (body: Exo 2), <code>--m</code> (numbers: JetBrains Mono). The font files are copied in <code>build.mjs</code>. To use another font, put its <code>.woff2</code> file in <code>dist/fonts</code> (and add it to the copy list in <code>build.mjs</code>), then change the <code>@font-face</code> lines at the top of <code>styles.css</code>.</li>
+<li><b>Logo planet</b> on the menu: <code>.menu .logo .mark</code> in <code>styles.css</code>. To use an image instead, replace the <code>background:</code> with <code>url('logo.png')</code> and copy <code>logo.png</code> into <code>dist</code> in <code>build.mjs</code>.</li>
+<li><b>Big 3D Mars on the menu</b>: <code>getBackdrop()</code> in <code>screens/common.js</code> (planet size, position, rotation speed, satellite orbit).</li>
+<li><b>Hangar</b> (design screen background): <code>getHangar()</code> in <code>screens/design.js</code>. Ring colours are <code>0xff8a3c</code> and <code>0x3fd0ff</code>.</li>
+</ul>
+<div class="box warn"><b>About the NASA logo:</b> it was left out on purpose, because using the NASA "meatball" logo needs NASA's permission. Use your own team logo.</div>
+
+<!-- ============================================================ -->
+<h2 id="parts">8. Rover components (the design screen)</h2>
+<p>Everything is in <code>CATALOG</code> in <code>data.js</code>. The design screen, stats, physics and results all read from it, so <b>adding an entry here is enough</b> for it to appear in the game.</p>
+<h3>Categories</h3>
+<table><tr><th>Key</th><th>Single or multi choice</th><th>Special fields used by the physics</th></tr>
+<tr><td><code>chassis</code></td><td>single</td><td><code>baseLoad</code> W awake, <code>sleepLoad</code> W at night, <code>payload</code> kg limit, <code>scale</code> (3D size: 1.0 = Curiosity size)</td></tr>
+<tr><td><code>wheels</code></td><td>single</td><td><code>sandCrr</code> (sand drag multiplier; lower is better), <code>grip</code>, <code>durability</code>, <code>speed</code> (m/s), <code>radius</code> &amp; <code>width</code> (visual scale and sinkage), <code>color</code></td></tr>
+<tr><td><code>solar</code></td><td>single</td><td><code>area</code> m²</td></tr>
+<tr><td><code>rtg</code></td><td>single</td><td><code>power</code> W, <code>heat</code> (true = no heaters needed)</td></tr>
+<tr><td><code>battery</code></td><td>single</td><td><code>capacity</code> Wh</td></tr>
+<tr><td><code>cameras</code></td><td>multi</td><td><code>power</code>. The ids <code>navcam</code>, <code>hazcam</code> and <code>mastcam</code> have special effects.</td></tr>
+<tr><td><code>instruments</code></td><td>multi</td><td><code>power</code>. The ids are used by science tasks (<code>rems</code>, <code>rad</code>, <code>chemcam</code>, <code>dan</code>, <code>gpr</code>).</td></tr>
+<tr><td><code>comms</code></td><td>single</td><td><code>txPower</code>, <code>relay</code> (UHF passes), <code>dte</code> (direct-to-Earth)</td></tr>
+<tr><td><code>arm</code></td><td>single</td><td><code>scoop</code>, <code>drill</code>, <code>apxs</code> (true/false)</td></tr></table>
+<p>Every option also has: <code>id</code> (unique, no spaces), <code>name</code>, <code>mass</code> (kg), <code>cost</code> ($M), <code>desc</code> (description), and optionally <code>doc: true</code>, which shows a green "REAL" badge for real NASA hardware.</p>
+<h3>Example: add a new battery</h3>
+<pre><code>battery: { …
+  options: [
+    { id: 'b06', name: 'Li-ion 0.6 kWh', mass: 6, cost: 8, capacity: 600, desc: 'Light. Little margin.' },
+    …
+    // NEW ↓
+    { id: 'b48', name: 'Li-ion 4.8 kWh', mass: 48, cost: 50, capacity: 4800, desc: 'Huge reserve, very heavy.' },
+  ],
+},</code></pre>
+<h3>Example: add a new wheel type</h3>
+<pre><code>{ id: 'tracks', name: 'Caterpillar tracks', mass: 70, cost: 55,
+  sandCrr: 0.5, grip: 1.4, durability: 1.5, speed: 0.030,
+  radius: 1.0, width: 1.6, color: 0x444444,
+  desc: 'Excellent in sand, but slow and very heavy.' },</code></pre>
+<h3>Example: add a new science instrument</h3>
+<pre><code>{ id: 'microscope', name: 'Hand-lens imager (MAHLI-type)', mass: 1, cost: 8, power: 10, payloadUse: true,
+  desc: 'Close-up colour images of rock grains.' },</code></pre>
+<p>Then make a science task need it: <code>needs: ['microscope']</code> (see section 10), and give it a nice name in the <code>needName</code> list in <code>sim.js</code>.</p>
+<h3>Other design settings</h3>
+<ul>
+<li><b>Budget</b>: <code>BUDGET_M = 900</code> in <code>data.js</code> ($ millions).</li>
+<li><b>Starting design</b>: <code>DEFAULT_DESIGN</code> in <code>data.js</code>. The <b>Reset</b> button design is in <code>design.js</code> (search <code>#reset</code>).</li>
+<li><b>Order of the tabs</b>: <code>CATEGORY_ORDER</code>.</li>
+<li><b>Engineering check messages</b> (red/yellow warnings): the <code>issues.push(…)</code> lines in <code>computeStats()</code> in <code>physics.js</code>. <code>'err'</code> blocks the Next button; <code>'warn'</code> and <code>'info'</code> don't.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="mission">9. Mission, targets &amp; difficulty</h2>
+<p>All in <code>MISSION</code> in <code>data.js</code>:</p>
+<table>
+<tr><th>Setting</th><th>Current</th><th>Effect</th></tr>
+<tr><td><code>sols</code></td><td>3</td><td>Mission length in Mars days. More sols is easier.</td></tr>
+<tr><td><code>startHour</code> / <code>endHour</code></td><td>9.0 / 17.5</td><td>Daily driving window (17.5 = 17:30)</td></tr>
+<tr><td><code>timeScale</code></td><td>100</td><td>Game speed. 200 makes everything twice as fast. Physics stays correct.</td></tr>
+<tr><td><code>landing</code></td><td>{x:-300, z:280}</td><td>Start position (the map runs from −500 to +500; keep within ±420)</td></tr>
+<tr><td><code>dust</code></td><td>τ 0.6 → 1.6</td><td>Dust storm. Set <code>tauStorm: 0.6</code> to remove it, or make <code>stormStart</code> later. Times are absolute hours: sol 2 13:00 = <code>24 + 13 = 37</code>.</td></tr>
+<tr><td><code>relayPasses</code></td><td>11:30 &amp; 16:00, 250/200 Mb</td><td>Orbiter passes that send data home</td></tr>
+<tr><td><code>targets</code></td><td>4 targets</td><td>Science sites (see below)</td></tr>
+</table>
+<h3>Difficulty quick recipes</h3>
+<table><tr><th>Easier</th><th>Harder</th></tr>
+<tr><td><code>BUDGET_M = 1200</code><br><code>sols: 4</code><br><code>tauStorm: 1.0</code><br><code>HEAT_LOSS_W_PER_K = 0.3</code> (physics.js)</td><td><code>BUDGET_M = 700</code><br><code>sols: 2</code><br><code>tauStorm: 2.5</code><br>move targets further apart</td></tr></table>
+<h3>Science targets</h3>
+<pre><code>{
+  id: 'T1', name: 'Yellowknife Layers', x: -110, z: 120,     // position on the map
+  kind: 'Ancient lakebed mudstone',
+  blurb: 'Fine-grained layered rock …',
+  tasks: [
+    { id: 'img',  label: 'Image the layers', needs: ['mastcam|navcam'], dataMb: 60, points: 10 },
+    { id: 'chem', label: 'Rock composition', needs: ['chemcam|apxs'],   dataMb: 12, points: 20 },
+    { id: 'core', label: 'Drill a rock core', needs: ['drill'],         dataMb: 20, points: 30, sample: true },
+  ],
+},</code></pre>
+<ul>
+<li><b>Move a target</b>: change <code>x</code> and <code>z</code> (−420 to +420). x = east (+) / west (−), z = south (+) / north (−). Hover the planning map to read coordinates.</li>
+<li><b>Important:</b> targets T1, T2 and T3 also shape the terrain (lakebed, dunes, ridge), because <code>terrain.js</code> reads their positions. Moving them moves those landforms too. T4 sits on the crater rim; if you move it, move <code>CRATER</code> in <code>terrain.js</code> as well.</li>
+<li><code>needs</code>: a list of requirements; <b>all</b> must be met. Inside one requirement, <code>|</code> means "or". For example, <code>['mastcam|navcam']</code> means either camera works.<br>Possible tags: any camera or instrument <code>id</code>, plus <code>scoop</code>, <code>drill</code>, <code>apxs</code> (from the arm).</li>
+<li><code>points</code>: science score. <code>dataMb</code>: data size that must be sent to Earth. <code>sample: true</code>: counts as a physical sample.</li>
+<li>The task <code>id</code> must exist in <code>TASK_INFO</code> (physics.js) and in <code>science.js</code>. To make a new kind of task, see the next section.</li>
+<li>Adding a 5th target: copy a target block, give it <code>id: 'T5'</code> and a position. It automatically gets a beacon, a map marker, objectives and scoring.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="science">10. Science tasks &amp; results</h2>
+<p><b>How long a task takes and how much power it uses</b>: <code>TASK_INFO</code> in <code>physics.js</code>:</p>
+<pre><code>export const TASK_INFO = {
+  img:  { hours: 0.25, power: 20 },   // 0.25 Mars hours ≈ 15 min, 20 W
+  core: { hours: 1.2,  power: 120 },  // drilling: long and power hungry
+  …
+};</code></pre>
+<p><b>What the player sees as the result</b>: <code>scienceResult()</code> in <code>src/science.js</code>. It has one <code>case</code> per task id. Each one sets <code>instrument</code>, <code>summary</code> (short line), <code>detail</code> (full text) and can change <code>points</code> or <code>dataMb</code>. For example, Navcam-only imaging gets half points.</p>
+<p><b>Rock compositions</b> (SiO₂, FeO… per target): the <code>COMPOSITION</code> table at the top of <code>science.js</code>.</p>
+<h3>Add a brand-new task type (example: microscope)</h3>
+<ol>
+<li>In <code>physics.js</code> → <code>TASK_INFO</code>, add <code>micro: { hours: 0.3, power: 10 },</code></li>
+<li>In <code>science.js</code>, add a case before the last <code>}</code> of the switch:
+<pre><code>case 'micro': {
+  instrument = 'MAHLI-type imager';
+  summary = 'Grains 0.1–0.5 mm, well rounded';
+  detail = 'Close-up images show rounded grains — transported by water.';
+  break;
+}</code></pre></li>
+<li>In <code>data.js</code>, add the task to a target: <code>{ id: 'micro', label: 'Close-up grain images', needs: ['microscope'], dataMb: 15, points: 15 }</code></li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="constants">11. Physics constants</h2>
+<table>
+<tr><th>Constant</th><th>File</th><th>Meaning</th></tr>
+<tr><td><code>MARS.g</code>, <code>solarConstant</code>, temperatures, pressures, radiation</td><td>data.js</td><td>Real Mars values (with sources)</td></tr>
+<tr><td><code>TERRAIN</code> (crr, mu, damage, color)</td><td>data.js</td><td>Rolling resistance, grip and wheel damage per terrain type</td></tr>
+<tr><td><code>PANEL_EFF</code> = 0.20</td><td>physics.js</td><td>Total solar efficiency (cells × packing × dust)</td></tr>
+<tr><td><code>DRIVE_EFF</code> = 0.50</td><td>physics.js</td><td>Motor + gearbox efficiency</td></tr>
+<tr><td><code>TILT_LIMIT_DEG</code> = 30</td><td>physics.js</td><td>Steepest slope ever allowed</td></tr>
+<tr><td><code>WEB_MIN_C</code> = −40, <code>HEAT_LOSS_W_PER_K</code> = 0.6</td><td>physics.js</td><td>Electronics minimum temperature, insulation</td></tr>
+<tr><td>Motor &amp; navigation overheads (<code>30 + wheel mass × 1.2</code>, <code>35 + cameras</code>)</td><td>physics.js → <code>drivePower()</code></td><td>Power used while driving besides pure physics</td></tr>
+<tr><td><code>DTE_RATE_MB_H</code> = 40</td><td>sim.js (top)</td><td>High-gain antenna data rate</td></tr>
+</table>
+<div class="box">After changing physics, check the <b>Design</b> screen numbers and do one <b>Auto-plan</b>. The planner shows whether the mission is still possible (lowest battery, finish time).</div>
+
+<!-- ============================================================ -->
+<h2 id="terrain">12. Terrain &amp; map</h2>
+<p><code>src/terrain.js</code> builds the landscape from maths. There are no image files. The <code>height(x, z)</code> function adds these layers:</p>
+<table>
+<tr><th>Feature</th><th>Settings object</th><th>Change</th></tr>
+<tr><td>Rolling hills</td><td>first line of <code>height()</code></td><td><code>* 9</code> = hill height; <code>/ 220</code> = hill size</td></tr>
+<tr><td>Vera Rubin ridge</td><td><code>RIDGE</code></td><td><code>h</code> height, <code>wid</code> width (smaller = steeper), <code>len</code>, <code>ang</code> rotation</td></tr>
+<tr><td>Crater (rim overlook)</td><td><code>CRATER</code></td><td><code>x, z</code>, <code>r</code> radius, <code>rim</code> height</td></tr>
+<tr><td>Sand dunes</td><td><code>DUNES</code> + dune code in <code>height()</code></td><td><code>r</code> field size; <code>prof * 2.4</code> = dune height (higher = steeper, harder)</td></tr>
+<tr><td>Lakebed (flat)</td><td><code>LAKE</code></td><td><code>r</code> size</td></tr>
+<tr><td>Map edge walls</td><td><code>if (r &gt; 420)</code></td><td>keeps the rover inside</td></tr>
+</table>
+<p><b>Terrain types</b> (sand, rock field, bedrock, gravel) are chosen in <code>terrainType()</code>. Example: <code>if (rockiness(x, z) &gt; 0.3) return 'rocky';</code>. Raise <code>0.3</code> to <code>0.4</code> for fewer rock fields.</p>
+<p><b>Rocks</b>: <code>rocks()</code>. Up to <code>1700</code> rocks; the chance of a rock depends on terrain; <code>big</code> rocks block the rover. Change the seed <code>rng(1234)</code> for a different rock layout.</p>
+<p><b>Different landscape</b>: change the seed numbers in the <code>fbm(…, seed)</code> calls inside <code>height()</code> (for example <code>3</code> → <code>8</code>).</p>
+<p><b>Map colours</b>: <code>COL</code> in <code>mapRender.js</code>. <b>3D ground colours</b>: <code>color</code> in <code>TERRAIN</code> (data.js).</p>
+
+<!-- ============================================================ -->
+<h2 id="visual">13. 3D visuals &amp; the rover model</h2>
+<h3>Mars environment (<code>src/world.js</code>)</h3>
+<ul>
+<li><b>Sky colours</b>: in <code>makeSky()</code>, the <code>zen</code> (top of sky) and <code>hor</code> (horizon) colours as RGB 0–1, e.g. <code>vec3(0.86,0.66,0.48)</code>.</li>
+<li><b>Fog / haze</b>: <code>scene.fog.density</code> in <code>update()</code>.</li>
+<li><b>Sun brightness</b>: <code>sun.intensity</code>. <b>Overall brightness</b>: <code>renderer.toneMappingExposure</code> in <code>main.js</code> (1.05).</li>
+<li><b>Mount Sharp</b> in the distance: the line with <code>1400 * Math.exp(…)</code> (1400 = height).</li>
+<li><b>Target beacons</b>: the beam colour is <code>0x3fd0ff</code>; there's a ring around each target. The layered rock at T1 and the hematite pebbles at T3 are built in the same loop.</li>
+<li><b>Graphics quality</b> presets (mesh detail, rock count, shadow size): <code>Q</code> at the top of <code>createWorld()</code>.</li>
+</ul>
+<h3>The rover (<code>src/rover.js</code>)</h3>
+<p>It loads <code>assets/rover.glb</code> (the Curiosity model from your zip) and adds parts based on the design:</p>
+<ul>
+<li>Wheels are resized and recoloured from the wheel <code>radius</code>, <code>width</code> and <code>color</code>.</li>
+<li>Solar wings (blue panels) have the correct real area in m².</li>
+<li>One orange battery box per 600 Wh.</li>
+<li>A white dish appears for the high-gain antenna and a gold helix for UHF; blue lights for hazcams.</li>
+<li>The whole rover is scaled by the chassis <code>scale</code>.</li>
+</ul>
+<h3>Swap the rover model (e.g. your <code>25042_Perseverance.glb</code>)</h3>
+<ol>
+<li>Copy the .glb into the source folder, then run:
+<pre><code>node tools/optimize.mjs "25042_Perseverance.glb" assets/rover.glb
+node build.mjs</code></pre></li>
+<li>The game expects the model to be in <b>metres</b>, standing on the ground (y = 0), with its <b>front facing +Z</b>. If it looks too big, too small or rotated, adjust it in <code>buildRover()</code>: <code>model.scale.setScalar(…)</code> and <code>model.rotation.y = Math.PI</code>.</li>
+<li>Wheel spinning and resizing look for the mesh named <code>part8</code> (the wheel part in the Curiosity model). With another model, find its wheel part number. Check the browser console with <code>F12</code>, or simply let the wheels not spin; everything else still works.</li>
+</ol>
+<div class="box warn">Check the licence of any 3D model you use (Sketchfab models often require crediting the author) and add the credit in the Credits screen.</div>
+
+<!-- ============================================================ -->
+<h2 id="controls">14. Controls &amp; HUD</h2>
+<ul>
+<li><b>Keys</b>: in <code>sim.js</code>, the <code>this._kd</code> function. Example: change <code>e.code === 'KeyR'</code> to <code>'KeyF'</code> to move AutoNav to F. Movement keys are in <code>step()</code> (<code>keys.KeyW</code> …). Also update the key list in <code>menu.js</code> (Settings) and in the HUD bottom-right box.</li>
+<li><b>Turn speed</b>: <code>S.yaw += steer * 0.55 * …</code> in <code>step()</code>.</li>
+<li><b>Science range</b> (blue ring): the number <code>16</code> (metres) used with <code>nearestTarget().d</code>.</li>
+<li><b>Camera</b>: <code>S.cam</code> (distance, angle). The Navcam view is in <code>tick()</code>.</li>
+<li><b>HUD panels</b>: the HTML at the top of <code>sim</code>'s <code>enter()</code> (<code>hud-tl</code>, <code>hud-bl</code>, …). Values are filled in <code>updateHud()</code>.</li>
+<li><b>Time warp levels</b>: the <code>KeyT</code> handler. Science tasks run at at least ×4 automatically (<code>Math.max(S.warp, 4)</code> in <code>step()</code>).</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="scoring">15. Scoring &amp; results</h2>
+<p>In <code>evaluate()</code> in <code>src/screens/results.js</code>:</p>
+<ul>
+<li><b>Score</b> = science points × data-return factor. Data still onboard at the end counts at 50%.</li>
+<li><b>Completion</b> = score ÷ maximum points (200).</li>
+<li><b>Status</b>: SUCCESS if completion ≥ 60% and at least 3 targets are done; PARTIAL if ≥ 25%; otherwise FAILED. If the rover died, it's PARTIAL only if ≥ 50%.</li>
+<li><b>Grade</b>: S ≥ 90%, A ≥ 75%, B ≥ 55%, C ≥ 35%, otherwise D (×0.85 if the rover was lost).</li>
+<li><b>Engineering report</b> ("what helped / what hurt"): each <code>I.push(['good'|'bad'|'tip', 'icon', 'message'])</code>. Add your own rule the same way, for example:
+<pre><code>if (S.odo &gt; 1000) I.push(['good', '🏁', `Long-distance driver: ${S.odo.toFixed(0)} m!`]);</code></pre></li>
+</ul>
+
+<h2 id="sound">16. Sound</h2>
+<p>All sounds are made by code in <code>src/audio.js</code>, so there are no files to manage.</p>
+<ul>
+<li>UI sounds: the <code>sfx</code> object (<code>click</code>, <code>success</code>, <code>fail</code> …). The first number is the pitch in Hz, the second the length in seconds.</li>
+<li>Menu music: <code>startMusic()</code>, using the <code>notes</code> list (frequencies).</li>
+<li>Wind and motor: <code>startAmbience()</code> and <code>setAmbience()</code>.</li>
+<li><b>Use a real music file</b>: put <code>music.mp3</code> in <code>dist</code> (copy it in <code>build.mjs</code>), then in <code>startMusic()</code> use <code>music = new Audio('music.mp3'); music.loop = true; music.play();</code>, and in <code>stopMusic()</code> use <code>music.pause()</code>.</li>
+</ul>
+
+<h2 id="menus">17. Menus, settings &amp; adding screens</h2>
+<ul>
+<li>Every screen is an object with <code>enter(app)</code> (build the page) and optionally <code>exit()</code>. They are listed in <code>src/screens/index.js</code>.</li>
+<li>To go to a screen from a button, use <code>app.go('design')</code>.</li>
+<li><b>Add a new screen</b> (e.g. "How to play"): create <code>src/screens/howto.js</code> exporting <code>howto = { enter(app) { … app.html(`&lt;div class="screen"&gt;…&lt;/div&gt;`) … } }</code>, add it to <code>index.js</code>, and add a button in <code>menu.js</code>: <code>&lt;button class="btn" data-a="howto"&gt;</code> with <code>el.querySelector('[data-a=howto]').onclick = () =&gt; app.go('howto');</code></li>
+<li><b>Default settings</b> (quality, volume…): <code>defaults</code> at the top of <code>main.js</code>. Players' choices are saved automatically.</li>
+<li><b>Unlock the Moon / Earth cards</b>: set <code>locked: false</code> in <code>MISSIONS_MENU</code>. They currently all lead to the Mars mission, so you'd need a second <code>MISSION</code> to make them different.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="build">18. Build the browser version</h2>
+<pre><code>node build.mjs          # readable build, good for testing
+node build.mjs --min    # smaller build, for sharing</code></pre>
+<p>Result: the <code>dist</code> folder (<code>index.html</code>, <code>game.js</code>, <code>rover-model.js</code>, <code>styles.css</code>, <code>fonts</code>). Zip it and share; anyone can double-click <code>index.html</code>. The rover model is embedded inside <code>rover-model.js</code>, which is why it works without a web server.</p>
+
+<h2 id="exe">19. Build the Windows .exe yourself</h2>
+<p>Building on your own PC avoids downloading the big file. It needs the full install (once): <code>npm install</code> (without <code>--omit=dev</code>). Then, in the terminal (PowerShell) inside <code>RedFrontier-Source</code>:</p>
+<pre><code>node build.mjs --min
+Remove-Item -Recurse -Force stage -ErrorAction SilentlyContinue
+mkdir stage
+Copy-Item -Recurse dist stage\game
+Copy-Item desktop\main.cjs, desktop\preload.cjs, desktop\icon.png stage\
+Copy-Item desktop\app-package.json stage\package.json
+node tools\pack.mjs</code></pre>
+<p>Result: <code>release\RedFrontier-win32-x64\RedFrontier.exe</code> (keep the whole folder together; the .exe needs the files next to it).</p>
+<ul>
+<li><b>Window icon</b>: replace <code>desktop/icon.png</code> (512×512 PNG).</li>
+<li><b>Start in fullscreen</b>: in <code>desktop/main.cjs</code>, add <code>fullscreen: true</code> to the <code>BrowserWindow({ … })</code> options.</li>
+<li><code>F11</code> toggles fullscreen and <code>F12</code> opens developer tools (for debugging).</li>
+<li>Windows SmartScreen warns about unsigned apps: <b>More info → Run anyway</b>.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="trouble">20. Troubleshooting</h2>
+<table>
+<tr><th>Problem</th><th>Fix</th></tr>
+<tr><td>"Access to the compressed folder is denied" when unzipping</td><td>The download didn't finish. Check the file size (right-click → Properties) and download it again.</td></tr>
+<tr><td>Black screen / stuck on loading after an edit</td><td>Press <code>F12</code> → Console. A red error shows the file and line, usually a missing <code>,</code> <code>}</code> or quote.</td></tr>
+<tr><td><code>node</code> is not recognized</td><td>Install Node.js, then close and reopen VS Code or the terminal.</td></tr>
+<tr><td>My change doesn't appear</td><td>Did you run <code>node build.mjs</code>? Did you refresh with <code>F5</code>? Are you opening <code>dist/index.html</code> from the source folder (not the old one)?</td></tr>
+<tr><td>"3D graphics unavailable"</td><td>Update the graphics driver, or turn on hardware acceleration in the browser settings.</td></tr>
+<tr><td>Game is slow</td><td>Settings → Quality: Low, Resolution 75%.</td></tr>
+<tr><td>Design "Plan the route" button is greyed out</td><td>There's a red error in Engineering Checks (over budget or over payload).</td></tr>
+<tr><td>Rover always gets stuck at one spot</td><td>The slope is beyond your wheels' limit. Use different wheels, a lighter rover, or route around it. To make the terrain gentler, lower the dune/ridge heights (section 12).</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="cheat">21. Cheat sheet — "I want to change…"</h2>
+<table>
+<tr><th>I want to change…</th><th>File</th><th>Look for</th></tr>
+<tr><td>Game name</td><td>data.js (+6 more places)</td><td><code>GAME</code> — see section 5</td></tr>
+<tr><td>Team names</td><td>screens/menu.js</td><td><code>Team members</code></td></tr>
+<tr><td>Colours</td><td>styles.css</td><td><code>:root</code></td></tr>
+<tr><td>A part's mass, cost or power</td><td>data.js</td><td><code>CATALOG</code></td></tr>
+<tr><td>Add a part</td><td>data.js</td><td><code>CATALOG → options</code></td></tr>
+<tr><td>Budget</td><td>data.js</td><td><code>BUDGET_M</code></td></tr>
+<tr><td>Mission length</td><td>data.js</td><td><code>MISSION.sols</code></td></tr>
+<tr><td>Game speed</td><td>data.js</td><td><code>timeScale</code></td></tr>
+<tr><td>Dust storm</td><td>data.js</td><td><code>MISSION.dust</code></td></tr>
+<tr><td>Target position / tasks / points</td><td>data.js</td><td><code>MISSION.targets</code></td></tr>
+<tr><td>Science result text</td><td>science.js</td><td><code>case 'taskid'</code></td></tr>
+<tr><td>Task duration / power</td><td>physics.js</td><td><code>TASK_INFO</code></td></tr>
+<tr><td>Solar efficiency, motor efficiency</td><td>physics.js</td><td><code>PANEL_EFF</code>, <code>DRIVE_EFF</code></td></tr>
+<tr><td>Terrain friction</td><td>data.js</td><td><code>TERRAIN</code></td></tr>
+<tr><td>Hills, dunes, crater, ridge</td><td>terrain.js</td><td><code>RIDGE</code>, <code>CRATER</code>, <code>DUNES</code>, <code>LAKE</code></td></tr>
+<tr><td>Sky colour</td><td>world.js</td><td><code>makeSky()</code></td></tr>
+<tr><td>Rover model</td><td>assets/rover.glb</td><td><code>tools/optimize.mjs</code></td></tr>
+<tr><td>Keys</td><td>screens/sim.js</td><td><code>this._kd</code>, <code>keys.KeyW</code></td></tr>
+<tr><td>Score / grade rules</td><td>screens/results.js</td><td><code>evaluate()</code></td></tr>
+<tr><td>Briefing text</td><td>screens/missions.js</td><td><code>briefing</code></td></tr>
+<tr><td>Menu buttons</td><td>screens/menu.js</td><td><code>&lt;nav&gt;</code></td></tr>
+<tr><td>Sounds</td><td>audio.js</td><td><code>sfx</code>, <code>startMusic</code></td></tr>
+<tr><td>Window title / icon (.exe)</td><td>desktop/main.cjs, icon.png</td><td><code>title</code></td></tr>
+</table>
+<p class="muted" style="margin-top:40px">Red Frontier — educational project for the NASA International Space Apps Challenge. Not affiliated with or endorsed by NASA.</p>
+</main></div></body></html>

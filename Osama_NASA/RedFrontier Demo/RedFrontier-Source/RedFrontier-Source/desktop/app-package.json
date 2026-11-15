@@ -1,0 +1,1 @@
+{ "name": "red-frontier", "productName": "Red Frontier", "version": "1.0.0", "description": "Mars Mission Designer — NASA Space Apps Challenge demo", "main": "main.cjs", "author": "Space Apps Team", "license": "MIT" }
